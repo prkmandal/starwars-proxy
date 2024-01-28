@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Backend/StarWarsModels/bin/Debug/net8.0
+/Backend/StarWarsModels/obj
+/Backend/StarWarsProxyApi/obj
+/Backend/StarWarsServices/bin/Debug/net8.0
+/Backend/StarWarsServices/obj
+/Backend/.vs
