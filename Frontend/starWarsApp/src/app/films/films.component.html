@@ -1,0 +1,27 @@
+<p>films </p>
+
+<table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Title</th>
+        <th scope="col">Episode_id</th>
+        <th scope="col">Director</th>
+        <th scope="col">Producer</th>
+        <th scope="col">Rlease_date</th>
+        <th scope="col">Starships</th>
+      </tr>
+    </thead>
+    <tbody>
+        @for(post of data; track post.id){
+            <tr>
+                <th scope="row">{{post.title}}</th>
+                <td>{{post.episode_id}}</td>        
+                <td>{{post.director}}</td>
+                <td>{{post.producer}}</td>
+                <td>{{post.rlease_date}}</td>
+                <td><a href="javascript: void(0);" (click)="navigateToStarship(post.starships)"> StarShips</a></td>
+              </tr>
+        }
+
+    </tbody>
+  </table>
