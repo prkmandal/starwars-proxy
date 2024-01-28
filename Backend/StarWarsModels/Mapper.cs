@@ -1,15 +1,15 @@
 ﻿using StarWars.Models.ServiceModel;
 using StarWars.Models.ViewModel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StarWars.Models
 {
     public static class Mapper
     {
+        /// <summary>
+        /// Extension method to convert FilmModel to FilmViewModel
+        /// </summary>
+        /// <param name="film">FilmModel</param>
+        /// <returns>FilmViewModel</returns>
         public static FilmViewModel Map(this FilmModel film)
         {
             return new FilmViewModel
@@ -30,6 +30,11 @@ namespace StarWars.Models
             };
         }
 
+        /// <summary>
+        /// Extension method to convert StarshipModel to StarShipViewModel
+        /// </summary>
+        /// <param name="starship">StarshipModel</param>
+        /// <returns>StarShipViewModel</returns>
         public static StarShipViewModel Map(this StarshipModel starship)
         {
             return new StarShipViewModel

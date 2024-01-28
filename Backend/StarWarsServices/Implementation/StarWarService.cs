@@ -1,14 +1,14 @@
-﻿using StarWarsServices.Interfaces;
-using System.Net.Http.Json;
-using Microsoft.Extensions.Http;
-using System.Net.Http;
-
-using System.Collections.Concurrent;
-using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using StarWars.Models.ServiceModel;
+using StarWarsServices.Interfaces;
+using System.Collections.Concurrent;
+using System.Net;
 namespace StarWars.Services.Implementation
 {
+    /// <summary>
+    /// Generic service to reterive Films, StarShips and People
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class StarWarService<T> : IStarWarService<T> where T : ReturnModel
     {
         private readonly IHttpClientFactory _httpClientFactory;
@@ -20,43 +20,76 @@ namespace StarWars.Services.Implementation
             _httpClient = _httpClientFactory.CreateClient("starWarsClient");
         }
 
-
-        public async Task<List<T>> FetchAll(string api)
+        #region Public methods
+        /// <summary>
+        /// To Fetch all record from respective entity api
+        /// </summary>
+        /// <param name="api">Entity name</param>
+        /// <returns>(HttpStatusCode, List<T>?)</returns>
+        public async Task<(HttpStatusCode, List<T>?)> FetchAll(string api)
         {
-            var reponse = await GetHttp(api);
-            var data = JsonConvert.DeserializeObject<Entitys<T>>(reponse);
-            return data.results;
+            (HttpStatusCode, string) reponse = await GetHttp(api);
+            if (reponse.Item1 == HttpStatusCode.OK)
+            {
+                var data = JsonConvert.DeserializeObject<Entitys<T>>(reponse.Item2);
+                return (HttpStatusCode.OK, data?.results);
+            }
 
+            return (reponse.Item1, null);
         }
 
-        public async Task<T> FetchById(string api, int id)
+        /// <summary>
+        /// To fetch one record based on id from respective entity api
+        /// </summary>
+        /// <param name="api">Entity name</param>
+        /// <param name="id">id</param>
+        /// <returns>(HttpStatusCode,T?)</returns>
+        public async Task<(HttpStatusCode,T?)> FetchById(string api, int id)
         {
             var reponse = await GetHttp($"{api}/{id}");
-            var data = JsonConvert.DeserializeObject<T>(reponse);
-            return data;
+            if (reponse.Item1 == HttpStatusCode.OK)
+            {
+                var data = JsonConvert.DeserializeObject<T>(reponse.Item2);
+                return (HttpStatusCode.OK, data);
+            }
+           return (reponse.Item1,null);
         }
 
+        /// <summary>
+        /// To fetch multiple records based on ids from respective entity api
+        /// </summary>
+        /// <param name="api">entity name</param>
+        /// <param name="arrayOfId">array of id</param>
+        /// <returns>List<T></returns>
         public async Task<List<T>> FetchByIds(string api, int[] arrayOfId)
         {
             var bag = new ConcurrentBag<T>();
             var tasks = arrayOfId.Select(async id =>
             {
                 var response = await FetchById(api, id);
-                bag.Add(response);
+                if(response.Item1 == HttpStatusCode.OK && response.Item2 != null)
+                {
+                    bag.Add(response.Item2);
+                }
+               
             });
             await Task.WhenAll(tasks);
             var count = bag.Count;
             return bag.ToList<T>();
         }
 
-        private async Task<string> GetHttp(string api)
+        #endregion
+
+        #region Private methods
+        private async Task<(HttpStatusCode, string)> GetHttp(string api)
         {
             using (var response = await _httpClient.GetAsync(api, HttpCompletionOption.ResponseHeadersRead))
             {
-                response.EnsureSuccessStatusCode();
-                var stream = await response.Content.ReadAsStringAsync();
-                return stream;
+                var responseStr = await response.Content.ReadAsStringAsync();
+                return (response.StatusCode, responseStr);
             }
+
         }
+        #endregion
     }
 }
