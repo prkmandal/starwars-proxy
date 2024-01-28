@@ -8,3 +8,5 @@
 /Backend/StarWarsServices/bin/Debug/net8.0
 /Backend/StarWarsServices/obj
 /Backend/.vs
+/Backend/StarWarsProxyApi/bin/Debug/net8.0
+/Frontend/starWarsApp/.vscode

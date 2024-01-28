@@ -5,6 +5,8 @@ using StarWars.Models.ViewModel;
 using StarWars.Services;
 using StarWarsServices.Interfaces;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,7 +16,7 @@ namespace StarWarsProxyApi.Controllers
     [ApiController]
     [Tags("Flims")]
     [Route("proxyapi/films")]
-    public class FilmController: ControllerBase
+    public class FilmController : ControllerBase
     {
         private readonly IStarWarService<FilmModel> _filmService;
         public FilmController(IStarWarService<FilmModel> filmService)
@@ -31,24 +33,26 @@ namespace StarWarsProxyApi.Controllers
         /// <response code="400">Bad request</response>
         /// <response code="500">Internal server error</response>
         [HttpGet]
+        [ProducesResponseType(typeof(List<FilmViewModel>), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        [ProducesResponseType(typeof(string),500)]
         public async Task<IActionResult> GetFilms()
         {
             try
             {
-                List<FilmModel> filmModels = await _filmService.FetchAll(Common.FilmApi);
-                if (filmModels == null)
+                (HttpStatusCode,List<FilmModel>?) result = await _filmService.FetchAll(Common.FilmApi);
+                if(result.Item1 == HttpStatusCode.OK && result.Item2 != null)
                 {
-                    return NoContent();
+                    List<FilmViewModel> viewModels = result.Item2.Select(film => film.Map()).ToList();
+                    return Ok(viewModels);
                 }
-
-                List<FilmViewModel> viewModels = filmModels.Select(film=> film.Map()).ToList();
-                return Ok(viewModels);
+                return StatusCode((int)result.Item1);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, ex.Message);
             }
-            
+
         }
 
         /// <summary>
@@ -64,27 +68,43 @@ namespace StarWarsProxyApi.Controllers
         [Route("{id}")]
         [ProducesResponseType(typeof(FilmViewModel), 200)]
         [ProducesResponseType(typeof(string), 404)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(typeof(string), 500)]
         public async Task<IActionResult> GetFilmById(int id)
         {
             try
             {
-                FilmModel filmModel = await _filmService.FetchById(Common.FilmApi, id);
-                FilmViewModel viewModel = filmModel.Map();
-                return Ok(viewModel);
+                (HttpStatusCode,FilmModel?) result = await _filmService.FetchById(Common.FilmApi, id);
+                if (result.Item1==HttpStatusCode.OK && result.Item2 != null)
+                {
+                    FilmViewModel viewModel = result.Item2.Map();
+                    return Ok(viewModel);
+                }
+                return StatusCode((int)result.Item1);
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                return StatusCode(500,ex.Message);
             }
-            
+
         }
 
+        /// <summary>
+        /// Fetch selective films
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> GetFilmsByIds([FromBody] int[] ids)
         {
-            var response = await _filmService.FetchByIds(Common.FilmApi, ids);
-            return Ok(response);
+            try
+            {
+                var response = await _filmService.FetchByIds(Common.FilmApi, ids);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
     }
