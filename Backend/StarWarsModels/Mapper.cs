@@ -14,17 +14,17 @@ namespace StarWars.Models
         {
             return new FilmViewModel
             {
-                Id = int.TryParse(film.Url.Replace(Common.FilmFullUrl, "").TrimEnd('/'), out int id)? id: 0,
+                Id = int.TryParse(film.Url?.Replace(Common.FilmFullUrl, "").TrimEnd('/'), out int id)? id: 0,
                 Title = film.Title,
                 Episode_id = film.Episode_id,
                 Opening_crawl = film.Opening_crawl,
                 Director = film.Director,
                 Producer = film.Producer,
-                Rlease_date = DateTime.TryParseExact(film.Rlease_date, "dd/MM/yyyy HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime dateTime) ? dateTime : null,
+                //Rlease_date = DateTime.TryParseExact(film.Rlease_date, "dd/MM/yyyy HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out DateTime dateTime) ? dateTime : null,
 
                 Starships = film.Starships.Select(url =>
                 {
-                    string modifiedUrl = url.Replace(Common.StarShipFullUrl, "").TrimEnd('/');
+                    string? modifiedUrl = url?.Replace(Common.StarShipFullUrl, "").TrimEnd('/');
                     return int.TryParse(modifiedUrl, out int itemId) ? itemId : 0;
                 }).ToArray()
             };

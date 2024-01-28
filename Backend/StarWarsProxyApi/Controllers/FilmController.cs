@@ -2,14 +2,8 @@
 using StarWars.Models;
 using StarWars.Models.ServiceModel;
 using StarWars.Models.ViewModel;
-using StarWars.Services;
 using StarWarsServices.Interfaces;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace StarWarsProxyApi.Controllers
 {
@@ -50,7 +44,16 @@ namespace StarWarsProxyApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                var problemDetails = new ProblemDetails
+                {
+                    Status = (int)HttpStatusCode.InternalServerError,
+                    Title = "Internal Server Error",
+                    Detail = ex.Message
+                };
+                return new ObjectResult(problemDetails)
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
             }
 
         }
