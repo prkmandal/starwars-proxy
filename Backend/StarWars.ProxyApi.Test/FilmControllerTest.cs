@@ -1,4 +1,6 @@
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using StarWars.Models;
 using StarWars.Models.ServiceModel;
@@ -11,13 +13,16 @@ namespace StarWars.ProxyApi.Test
 {
     public class FilmControllerTests
     {
-        private  Mock<IStarWarService<FilmModel>> filmServiceMock;
-        private  FilmController filmController;
+        private  Mock<IStarWarService<FilmModel>> _filmServiceMock;
+        private  FilmController _filmController;
+        private Mock<ILogger<FilmController>> _mockLogger ;
 
         public void Setup()
         {
-            filmServiceMock = new Mock<IStarWarService<FilmModel>>();
-            filmController = new FilmController(filmServiceMock.Object);
+            _filmServiceMock = new Mock<IStarWarService<FilmModel>>();
+            _mockLogger = new Mock<ILogger<FilmController>>();
+            _filmController = new FilmController(_mockLogger.Object,_filmServiceMock.Object );
+            
         }
 
 
@@ -27,10 +32,10 @@ namespace StarWars.ProxyApi.Test
             // Arrange
             Setup();
             var filmModels = new List<FilmModel>() { new FilmModel{ Title="Test Film", Director = "Director", Starships = new List<string> { } } };
-            filmServiceMock.Setup(s => s.FetchAll(Common.FilmApi)).ReturnsAsync((HttpStatusCode.OK, filmModels));
+            _filmServiceMock.Setup(s => s.FetchAll(Common.FilmApi)).ReturnsAsync((HttpStatusCode.OK, filmModels));
 
             // Act
-            var result = await filmController.GetFilms();
+            var result = await _filmController.GetFilms();
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
@@ -46,10 +51,10 @@ namespace StarWars.ProxyApi.Test
             Setup();
             var filmId = 1;
             var filmModel = new FilmModel { Title = "Test Film", Director = "Director", Starships = new List<string> { } };
-            filmServiceMock.Setup(s => s.FetchById(Common.FilmApi, filmId)).ReturnsAsync((HttpStatusCode.OK, filmModel));
+            _filmServiceMock.Setup(s => s.FetchById(Common.FilmApi, filmId)).ReturnsAsync((HttpStatusCode.OK, filmModel));
 
             // Act
-            var result = await filmController.GetFilmById(filmId);
+            var result = await _filmController.GetFilmById(filmId);
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
@@ -63,10 +68,10 @@ namespace StarWars.ProxyApi.Test
             // Arrange
             Setup();
             var filmId = 1;
-            filmServiceMock.Setup(s => s.FetchById(Common.FilmApi, filmId)).ReturnsAsync((HttpStatusCode.NotFound, (FilmModel?)null));
+            _filmServiceMock.Setup(s => s.FetchById(Common.FilmApi, filmId)).ReturnsAsync((HttpStatusCode.NotFound, (FilmModel?)null));
 
             // Act
-            var result = await filmController.GetFilmById(filmId);
+            var result = await _filmController.GetFilmById(filmId);
 
             // Assert
             Assert.IsType<StatusCodeResult>(result);
