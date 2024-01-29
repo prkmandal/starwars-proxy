@@ -10,3 +10,7 @@
 /Backend/.vs
 /Backend/StarWarsProxyApi/bin/Debug/net8.0
 /Frontend/starWarsApp/.vscode
+/Backend/StarWars.ProxyApi.Test/bin/Debug/net8.0
+/Backend/StarWars.Services.Test/bin/Debug/net8.0
+/Backend/StarWars.ProxyApi.Test/obj
+/Backend/StarWars.Services.Test/obj
