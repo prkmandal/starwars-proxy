@@ -44,7 +44,7 @@ export class StarshipsComponent implements OnInit {
 
   navigateToFilm(ids: number[])
   {
-    this.modalService.setStarShipIds(ids);
-    this.router.navigate(['/films', {queryParams:{ films: ids }}]);
+    this.modalService.setFilmsIds(ids);
+    this.router.navigate(['/']);
   }
 }

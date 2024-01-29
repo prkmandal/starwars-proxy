@@ -20,6 +20,14 @@ export class ModalCommunicationService {
     return this.starShipIds;
   }
 
+  setFilmsIds(data: any): void {
+    this.filmIds.next(data);
+  }
+
+  getFilmsIds(): BehaviorSubject<any> {
+    return this.filmIds;
+  }
+
   // private modalDataSubject = new BehaviorSubject<any>(null);
   // modalData$ = this.modalDataSubject.asObservable();
 

@@ -18,20 +18,38 @@ data:any=[];
 constructor(private modalService: ModalCommunicationService, private route: ActivatedRoute, private router: Router){}
 
   ngOnInit(): void {
-       // Retrieve route parameters
-       this.route.params.subscribe((queryParams) => {
-        var receivedParam = queryParams['films'];
-        if(receivedParam)
-        {
 
-        }
-        else{
-          this.fetchAllData();
-        }
-        
-      });
-
+    this.modalService.getFilmsIds().subscribe((data) => {
+      if(data){
+        this.fetchDataBasedOnIDs(data);
+      }
+   else{
+     this.fetchAllData();
+   }
+  });
   }
+
+  fetchDataBasedOnIDs(ids:number[]){
+    this.httpClient.post('http://localhost:7000/proxyapi/films', ids)
+    .subscribe((model:any)=>{
+      this.data = model;
+    });
+  }
+
+       // Retrieve route parameters
+      //  this.route.params.subscribe((queryParams) => {
+      //   var receivedParam = queryParams['films'];
+      //   if(receivedParam)
+      //   {
+
+      //   }
+      //   else{
+      //     this.fetchAllData();
+      //   }
+        
+      // });
+
+  
 
     fetchAllData(){
     this.httpClient.get('http://localhost:7000/proxyapi/films')
