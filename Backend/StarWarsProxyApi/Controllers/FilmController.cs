@@ -12,9 +12,11 @@ namespace StarWarsProxyApi.Controllers
     [Route("proxyapi/films")]
     public class FilmController : ControllerBase
     {
+        private readonly ILogger<FilmController> _logger;
         private readonly IStarWarService<FilmModel> _filmService;
-        public FilmController(IStarWarService<FilmModel> filmService)
+        public FilmController(ILogger<FilmController> logger,IStarWarService<FilmModel> filmService)
         {
+            _logger = logger;
             _filmService = filmService;
         }
 
@@ -44,6 +46,7 @@ namespace StarWarsProxyApi.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 var problemDetails = new ProblemDetails
                 {
                     Status = (int)HttpStatusCode.InternalServerError,
@@ -86,7 +89,17 @@ namespace StarWarsProxyApi.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500,ex.Message);
+                _logger.LogError(ex.Message);
+                var problemDetails = new ProblemDetails
+                {
+                    Status = (int)HttpStatusCode.InternalServerError,
+                    Title = "Internal Server Error",
+                    Detail = ex.Message
+                };
+                return new ObjectResult(problemDetails)
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
             }
 
         }
@@ -102,11 +115,22 @@ namespace StarWarsProxyApi.Controllers
             try
             {
                 var response = await _filmService.FetchByIds(Common.FilmApi, ids);
+
                 return Ok(response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                _logger.LogError(ex.Message);
+                var problemDetails = new ProblemDetails
+                {
+                    Status = (int)HttpStatusCode.InternalServerError,
+                    Title = "Internal Server Error",
+                    Detail = ex.Message
+                };
+                return new ObjectResult(problemDetails)
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
             }
         }
 

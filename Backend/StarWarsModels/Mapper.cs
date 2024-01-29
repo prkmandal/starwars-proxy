@@ -39,14 +39,14 @@ namespace StarWars.Models
         {
             return new StarShipViewModel
             {
-                Id = Convert.ToInt16(starship.Url.Replace(Common.StarShipFullUrl, "").TrimEnd('/')),
+                Id = Convert.ToInt16(starship.Url?.Replace(Common.StarShipFullUrl, "").TrimEnd('/')),
                 Name = starship.Name,
                 Model = starship.Model,
                 Manufacturer = starship.Manufacturer,
                 Consumables = starship.Consumables,
                 Films = starship.Films.Select(url =>
                 {
-                    string modifiedUrl = url.Replace(Common.FilmFullUrl, "").TrimEnd('/');
+                    string? modifiedUrl = url?.Replace(Common.FilmFullUrl, "").TrimEnd('/');
                     return int.TryParse(modifiedUrl, out int itemId) ? itemId : 0;
                 }).ToArray()
             };
