@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: Proxy window for Star Wars
+  title: Proxy window for Star Wars API
   version: v1
 paths:
   /proxyapi/films:
@@ -55,8 +55,8 @@ paths:
     post:
       tags:
         - Flims
-      summary: "Fetch films by list of Id"
-      description: "Post request to fetch multiple films deatils using id"
+      summary: "Fetch films by list of Ids"
+      description: "Post request to fetch multiple films deatils using array of ids"
       requestBody:
         content:
           application/json:
@@ -85,9 +85,8 @@ paths:
     get:
       tags:
         - Flims
-        
       summary: "Fetch a film by a single id"
-      description: "To fetch particular film details using id"
+      description: "To fetch particular film details using a id"
       parameters:
         - name: id
           in: path
@@ -136,6 +135,8 @@ paths:
     get:
       tags:
         - StarShips
+      summary: "Fetch all starships"
+      description: "To fetch all starships details from Star Wars api"
       responses:
         '200':
           description: Success
@@ -182,6 +183,8 @@ paths:
     post:
       tags:
         - StarShips
+      summary: "Fetch starships by list of Ids"
+      description: "Post request to fetch multiple starships deatils using array of ids"
       requestBody:
         content:
           application/json:
@@ -209,6 +212,8 @@ paths:
     get:
       tags:
         - StarShips
+      summary: "Fetch a particular starship by a single Id"
+      description: "To fetch particular starship details using a id from Star Wars api"
       parameters:
         - name: id
           in: path
