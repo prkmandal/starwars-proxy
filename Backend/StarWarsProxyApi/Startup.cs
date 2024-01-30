@@ -34,7 +34,7 @@ namespace StarWarsProxyApi
                  httpClient.DefaultRequestHeaders.Clear();
              });
 
-            services.AddScoped(typeof(IStarWarService<>), typeof(StarWarService<>));
+            services.AddTransient(typeof(IStarWarService<>), typeof(StarWarService<>));
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();
